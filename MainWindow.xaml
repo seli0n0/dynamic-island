@@ -712,7 +712,7 @@
                     </StackPanel>
                 </Grid>
 
-                <Grid x:Name="MenuView" Width="300" Height="163" HorizontalAlignment="Center" VerticalAlignment="Top">
+                <Grid x:Name="MenuView" Width="300" Height="133" HorizontalAlignment="Center" VerticalAlignment="Top">
                     <StackPanel x:Name="MenuBody" Margin="8,10,8,0">
                         <TextBlock Style="{StaticResource Caption}" Text="DYNAMIC ISLAND" Margin="12,0,0,7"/>
                         <Border Style="{StaticResource Card}" Margin="0">
@@ -744,18 +744,12 @@
                                         <local:Icon Style="{StaticResource RowChevron}"/>
                                     </Grid>
                                 </Button>
-                                <Button Style="{StaticResource RowButton}" Click="Exit_Click">
-                                    <Grid>
-                                        <local:Icon Style="{StaticResource RowIcon}" Kind="Power" Fill="{StaticResource Red}"/>
-                                        <TextBlock Style="{StaticResource RowLabel}" Text="Закрыть остров" Foreground="{StaticResource Red}"/>
-                                    </Grid>
-                                </Button>
                             </local:RowList>
                         </Border>
                     </StackPanel>
                 </Grid>
 
-                <Grid x:Name="SettingsView" Width="320" Height="432" HorizontalAlignment="Center" VerticalAlignment="Top">
+                <Grid x:Name="SettingsView" Width="320" Height="479" HorizontalAlignment="Center" VerticalAlignment="Top">
                     <StackPanel x:Name="SettingsBody" Margin="8,6,8,0">
                         <Button Style="{StaticResource BackButton}" Content="НАСТРОЙКИ" Click="SettingsBack_Click"/>
                         <UniformGrid Rows="1" Height="48" Margin="-3,0,0,0">
@@ -866,41 +860,15 @@
                                 </Button>
                             </local:RowList>
                         </Border>
-                    </StackPanel>
-                </Grid>
-
-                <Grid x:Name="UpdatePage" Width="320" Height="150" HorizontalAlignment="Center" VerticalAlignment="Top">
-                    <StackPanel x:Name="UpdateBody" Margin="10,8,10,0" VerticalAlignment="Top">
-                        <local:RowList>
-                            <Button Style="{StaticResource BackButton}" Content="ОБНОВЛЕНИЕ" Click="UpdateBack_Click"/>
-                        </local:RowList>
-                        <StackPanel Orientation="Horizontal" Margin="12,2,12,0">
-                            <TextBlock x:Name="UpdateVersion" FontSize="30" FontWeight="SemiBold" Foreground="White"
-                                       FontFamily="{DynamicResource FaceDisplay}"/>
-                            <TextBlock x:Name="UpdateFrom" FontSize="13.5" Foreground="{StaticResource Dim}"
-                                       Margin="9,0,0,5" VerticalAlignment="Bottom"/>
-                        </StackPanel>
-                        <StackPanel x:Name="UpdateNotes" Margin="12,10,12,0">
-                            <TextBlock Style="{StaticResource Caption}" Text="ЧТО НОВОГО"/>
-                            <TextBlock x:Name="UpdateNotesText" FontSize="12.5" Foreground="{StaticResource Dim}" Margin="0,5,0,0"
-                                       TextWrapping="Wrap" LineHeight="18" LineStackingStrategy="BlockLineHeight"/>
-                        </StackPanel>
-                        <Grid Height="36" Margin="4,14,4,0">
-                            <Button x:Name="UpdateButton" Style="{StaticResource ChipButton}" Height="36" Margin="0"
-                                    FontSize="13.5" FontWeight="SemiBold" Click="Update_Click"/>
-                            <Grid x:Name="UpdateLoad" Margin="8,0" Visibility="Collapsed">
-                                <local:Ring x:Name="UpdateRing" Width="22" Height="22" Thickness="3" Progress="0"
-                                            Stroke="{StaticResource Orange}" RenderTransformOrigin="0.5,0.5"
-                                            HorizontalAlignment="Left" VerticalAlignment="Center">
-                                    <local:Ring.RenderTransform>
-                                        <ScaleTransform ScaleX="-1"/>
-                                    </local:Ring.RenderTransform>
-                                </local:Ring>
-                                <TextBlock Text="Скачиваю" FontSize="13.5" Foreground="White" Margin="34,0,0,0" VerticalAlignment="Center"/>
-                                <TextBlock x:Name="UpdateBytes" FontSize="13.5" Foreground="{StaticResource Dim}"
-                                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                            </Grid>
-                        </Grid>
+                        <Button x:Name="ExitButton" Style="{StaticResource ChipButton}" Height="38" Margin="2,9,2,0"
+                                Background="#22FF453A" Foreground="{StaticResource Red}" FontSize="13"
+                                FontWeight="SemiBold" Click="Exit_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <local:Icon Kind="Power" Width="15" Height="15" Fill="{StaticResource Red}"
+                                            VerticalAlignment="Center"/>
+                                <TextBlock x:Name="ExitLabel" Text="Закрыть остров" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </Grid>
 

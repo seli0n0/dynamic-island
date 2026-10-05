@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.Globalization;
 using System.Net.Http;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -16,7 +17,6 @@ sealed class Updater
     const string LatestReleaseUrl = "https://api.github.com/repos/seli0n0/dynamic-island/releases/latest";
     const string AssetName = "DynamicIsland.exe";
     const string HashPrefix = "sha256:";
-    const int MaxNotes = 6;
     const int BufferSize = 1 << 16;
     const int CleanUpAttempts = 10;
     static readonly TimeSpan CheckInterval = TimeSpan.FromMinutes(30);
@@ -43,6 +43,14 @@ sealed class Updater
 
     public string[] Notes { get; private set; } = [];
 
+    /// Page of the release on GitHub, and when it went out — both only known once CheckAsync has run.
+    public string ReleaseUrl { get; private set; } = "";
+
+    public DateTime? PublishedAt { get; private set; }
+
+    /// SHA-256 GitHub publishes for the asset. Empty when the release was uploaded without one.
+    public string Digest => _digest;
+
     public int Percent { get; private set; }
 
     public long DownloadedBytes { get; private set; }
@@ -66,6 +74,9 @@ sealed class Updater
             JsonElement release = document.RootElement;
             LatestVersion = Normalize(Version.Parse(release.GetProperty("tag_name").GetString()!.TrimStart('v')));
             Notes = release.TryGetProperty("body", out JsonElement body) ? ParseNotes(body.GetString() ?? "") : [];
+            ReleaseUrl = release.TryGetProperty("html_url", out JsonElement page) ? page.GetString() ?? "" : "";
+            PublishedAt = release.TryGetProperty("published_at", out JsonElement stamp)
+                && DateTime.TryParse(stamp.GetString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime at) ? at : null;
             _downloadUrl = _digest = "";
             foreach (JsonElement asset in release.GetProperty("assets").EnumerateArray())
             {
@@ -174,7 +185,6 @@ sealed class Updater
         .Where(line => line.Length > 2 && line[0] is '-' or '*' or '•' && line[1] == ' ')
         .Select(line => line[2..].Replace("**", "").Replace("`", "").Trim())
         .Where(line => line.Length > 0 && !line.Contains("http", StringComparison.OrdinalIgnoreCase))
-        .Take(MaxNotes)
         .ToArray();
 
     static Version Normalize(Version version) => new(version.Major, version.Minor, Math.Max(version.Build, 0));
