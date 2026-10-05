@@ -33,11 +33,11 @@ public partial class MainWindow : Window
         [View.IdleBig] = new(320, 124, 38),
         [View.TimerBig] = new(330, 92, 40),
         [View.TimerSet] = new(300, 190, 38),
-        [View.Menu] = new(300, 210, 34),
-        [View.Settings] = new(320, 574, 34),
-        [View.Look] = new(320, 288, 34),
-        [View.Position] = new(320, 340, 34),
-        [View.Fonts] = new(320, 300, 34),
+        [View.Menu] = new(300, 163, 34),
+        [View.Settings] = new(320, 432, 34),
+        [View.Look] = new(320, 269, 34),
+        [View.Position] = new(320, 272, 34),
+        [View.Fonts] = new(320, 252, 34),
         [View.Shelf] = new(380, 480, 34),
         [View.ClipToast] = new(250, 34, 17),
         [View.Update] = new(320, 150, 34),
@@ -59,6 +59,10 @@ public partial class MainWindow : Window
     };
 
     static readonly View[] MenuPages = [View.Settings, View.Look, View.Position, View.Fonts, View.TimerSet, View.TimerBig, View.Shelf];
+
+    /// Pills that hold a page of rows are as tall as those rows: the host is clipped to the pill, so a row that
+    /// falls past its bottom edge is not low in the list any more, it is gone. See <see cref="FitPages"/>.
+    const double PageBottomPad = 6;
 
     const double HostWidth = 620;
     const double CompactMaxHeight = 40;
@@ -189,6 +193,7 @@ public partial class MainWindow : Window
 
     void PrepareViews()
     {
+        FitPages();
         foreach (FrameworkElement view in _views.Values)
         {
             view.RenderTransformOrigin = new Point(0.5, 0.5);
@@ -209,6 +214,19 @@ public partial class MainWindow : Window
         {
             icon.RenderTransformOrigin = new Point(0.5, 0.5);
             icon.RenderTransform = new ScaleTransform(1, 1);
+        }
+    }
+
+    void FitPages()
+    {
+        foreach ((View view, FrameworkElement body) in new (View, FrameworkElement)[]
+        {
+            (View.Menu, MenuBody), (View.Settings, SettingsBody), (View.Look, LookBody),
+            (View.Position, PositionBody), (View.Fonts, FontsBody),
+        })
+        {
+            body.Measure(new Size(_views[view].Width, double.PositiveInfinity));
+            _views[view].Height = Math.Ceiling(body.DesiredSize.Height) + body.Margin.Top + PageBottomPad;
         }
     }
 
@@ -421,6 +439,7 @@ public partial class MainWindow : Window
         View.Media => PillShapes[view] with { Width = _compactMediaWidth },
         View.MediaBig when _playerHasLyricRoom => PillShapes[view] with { Height = PlayerHeight + PlayerLyricsHeight },
         View.Update => PillShapes[view] with { Height = UpdatePage.Height },
+        View.Menu or View.Settings or View.Look or View.Position or View.Fonts => PillShapes[view] with { Height = _views[view].Height },
         _ => PillShapes[view],
     };
 
