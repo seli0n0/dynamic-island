@@ -13,9 +13,9 @@ namespace DynamicIsland;
 
 public partial class MainWindow : Window
 {
-    enum View { Idle, Media, Timer, Volume, Charge, Focus, Toast, Notice, MediaBig, IdleBig, TimerBig, TimerSet, Menu, Settings, Look, Position, Fonts, Shelf, ClipToast, Loading }
+    enum View { Idle, Media, Timer, Volume, Charge, Focus, Toast, Notice, MediaBig, IdleBig, TimerBig, TimerSet, Menu, Settings, Look, Position, Fonts, Shelf, Phone, ClipToast, Loading }
 
-    enum Panel { None, Player, Timer, TimerSet, Menu, Settings, Look, Position, Fonts, Shelf }
+    enum Panel { None, Player, Timer, TimerSet, Menu, Settings, Look, Position, Fonts, Shelf, Phone }
 
     readonly record struct PillShape(double Width, double Height, double Radius);
 
@@ -39,6 +39,7 @@ public partial class MainWindow : Window
         [View.Position] = new(320, 272, 34),
         [View.Fonts] = new(320, 252, 34),
         [View.Shelf] = new(380, 480, 34),
+        [View.Phone] = new(320, 300, 34),
         [View.ClipToast] = new(250, 34, 17),
         [View.Loading] = new(118, 34, 17),
     };
@@ -57,7 +58,7 @@ public partial class MainWindow : Window
         [View.MediaBig] = new(20, 20, 64, 22, 52, 38, 26, 1),
     };
 
-    static readonly View[] MenuPages = [View.Settings, View.Look, View.Position, View.Fonts, View.TimerSet, View.TimerBig, View.Shelf];
+    static readonly View[] MenuPages = [View.Settings, View.Look, View.Position, View.Fonts, View.TimerSet, View.TimerBig, View.Shelf, View.Phone];
 
     /// Pills that hold a page of rows are as tall as those rows: the host is clipped to the pill, so a row that
     /// falls past its bottom edge is not low in the list any more, it is gone. See <see cref="FitPages"/>.
@@ -137,6 +138,7 @@ public partial class MainWindow : Window
             [View.Position] = PositionView,
             [View.Fonts] = FontsView,
             [View.Shelf] = ShelfView,
+            [View.Phone] = PhoneView,
             [View.ClipToast] = ClipToastView,
             [View.Loading] = LoadingView,
         };
@@ -176,6 +178,7 @@ public partial class MainWindow : Window
         _shelf.Changed += SyncShelf;
         _shelf.PictureLoaded += OnShelfPictureLoaded;
         _copies.Changed += SyncClip;
+        WireBridge();
 
         PrepareViews();
         Peekable(EdgeRow, EdgeChoices);
@@ -223,12 +226,18 @@ public partial class MainWindow : Window
         foreach ((View view, FrameworkElement body) in new (View, FrameworkElement)[]
         {
             (View.Menu, MenuBody), (View.Settings, SettingsBody), (View.Look, LookBody),
-            (View.Position, PositionBody), (View.Fonts, FontsBody),
-        })
-        {
-            body.Measure(new Size(_views[view].Width, double.PositiveInfinity));
-            _views[view].Height = Math.Ceiling(body.DesiredSize.Height) + body.Margin.Top + PageBottomPad;
-        }
+            (View.Position, PositionBody), (View.Fonts, FontsBody), (View.Phone, PhoneBody),
+        }) FitPage(view, body);
+    }
+
+    /// <summary>
+    /// How tall a page wants to be, measured at its own width. A page whose words arrive later than this measuring —
+    /// the phone page learns its address and its note only when the bridge speaks — is fitted again then.
+    /// </summary>
+    void FitPage(View view, FrameworkElement body)
+    {
+        body.Measure(new Size(_views[view].Width, double.PositiveInfinity));
+        _views[view].Height = Math.Ceiling(body.DesiredSize.Height) + body.Margin.Top + PageBottomPad;
     }
 
     bool IsMediaActive => _media.HasTrack && (_media.IsPlaying || DateTime.UtcNow - _lastPlayedAt < PausedMediaLinger);
@@ -298,6 +307,7 @@ public partial class MainWindow : Window
         SyncAccent(false);
         SyncShelf();
         SyncClip();
+        if (Settings.Bridge) OpenBridge(); else RefreshPhone();
         PlayIntro();
         _ticker.Start();
         if (_forcedTimerSeconds > 0) StartTimer(TimeSpan.FromSeconds(_forcedTimerSeconds));
@@ -330,6 +340,7 @@ public partial class MainWindow : Window
         window?.Close();
         _ticker.Stop();
         _alarm.Stop();
+        _bridge.Stop();
         var fade = new DoubleAnimation(0, Ms(220));
         fade.Completed += (_, _) => Application.Current.Shutdown();
         Root.BeginAnimation(OpacityProperty, fade);
@@ -369,6 +380,7 @@ public partial class MainWindow : Window
             Panel.Position => View.Position,
             Panel.Fonts => View.Fonts,
             Panel.Shelf => View.Shelf,
+            Panel.Phone => View.Phone,
             Panel.TimerSet => View.TimerSet,
             Panel.Timer when _countdown.IsActive => View.TimerBig,
             Panel.Timer or Panel.Player => _media.HasTrack ? View.MediaBig : View.IdleBig,
@@ -442,7 +454,7 @@ public partial class MainWindow : Window
     {
         View.Media => PillShapes[view] with { Width = _compactMediaWidth },
         View.MediaBig when _playerHasLyricRoom => PillShapes[view] with { Height = PlayerHeight + PlayerLyricsHeight },
-        View.Menu or View.Settings or View.Look or View.Position or View.Fonts => PillShapes[view] with { Height = _views[view].Height },
+        View.Menu or View.Settings or View.Look or View.Position or View.Fonts or View.Phone => PillShapes[view] with { Height = _views[view].Height },
         _ => PillShapes[view],
     };
 

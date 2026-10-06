@@ -737,6 +737,16 @@
                                         </StackPanel>
                                     </Grid>
                                 </Button>
+                                <Button Style="{StaticResource RowButton}" Click="PhoneRow_Click">
+                                    <Grid>
+                                        <local:Icon Style="{StaticResource RowIcon}" Kind="Phone"/>
+                                        <TextBlock Style="{StaticResource RowLabel}" Text="Телефон"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <local:Digits x:Name="MenuPhone" Foreground="{StaticResource Dim}" VerticalAlignment="Center"/>
+                                            <local:Icon Style="{StaticResource RowChevron}" Margin="8,1,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Button>
                                 <Button Style="{StaticResource RowButton}" Click="SettingsRow_Click">
                                     <Grid>
                                         <local:Icon Style="{StaticResource RowIcon}" Kind="Gear"/>
@@ -846,6 +856,24 @@
                                 </Button>
                             </local:RowList>
                         </Border>
+                        <Border Style="{StaticResource Card}">
+                            <local:RowList>
+                                <Button Style="{StaticResource RowButton}" Click="Bridge_Click">
+                                    <Grid>
+                                        <local:Icon Style="{StaticResource RowIcon}" Kind="Phone"/>
+                                        <TextBlock Style="{StaticResource RowLabel}" Text="Мост с телефоном"/>
+                                        <local:Toggle x:Name="BridgeSwitch" Style="{StaticResource RowSwitch}"/>
+                                    </Grid>
+                                </Button>
+                                <Button Style="{StaticResource RowButton}" Click="BridgeKde_Click">
+                                    <Grid>
+                                        <local:Icon Style="{StaticResource RowIcon}" Kind="Windows"/>
+                                        <TextBlock Style="{StaticResource RowLabel}" Text="Протокол KDE Connect"/>
+                                        <local:Toggle x:Name="BridgeKdeSwitch" Style="{StaticResource RowSwitch}"/>
+                                    </Grid>
+                                </Button>
+                            </local:RowList>
+                        </Border>
                         <Border Style="{StaticResource Card}" Margin="0">
                             <local:RowList>
                                 <Button Style="{StaticResource RowButton}" Click="UpdateRow_Click">
@@ -869,6 +897,60 @@
                                 <TextBlock x:Name="ExitLabel" Text="Закрыть остров" Margin="8,0,0,0" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="PhoneView" Width="320" Height="300" HorizontalAlignment="Center" VerticalAlignment="Top">
+                    <StackPanel x:Name="PhoneBody" Margin="8,6,8,0">
+                        <Button Style="{StaticResource BackButton}" Content="ТЕЛЕФОН" Click="PhoneBack_Click"/>
+                        <Border Style="{StaticResource Card}" Padding="10,12">
+                            <StackPanel>
+                                <Border x:Name="CodePlate" Width="172" Height="172" CornerRadius="12" Background="White"
+                                        HorizontalAlignment="Center">
+                                    <Image x:Name="PhoneCode" Width="156" Height="156" VerticalAlignment="Center"
+                                           HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                                </Border>
+                                <TextBlock x:Name="PhoneUrl" Text="—" FontSize="11.5" Foreground="{StaticResource Dim}"
+                                           HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                                <TextBlock x:Name="PhoneNote" FontSize="11" Foreground="{StaticResource Faint}"
+                                           TextAlignment="Center" TextWrapping="Wrap" Margin="4,5,4,0"/>
+                            </StackPanel>
+                        </Border>
+                        <Border x:Name="PairCard" Style="{StaticResource Card}" Padding="12,10" Visibility="Collapsed">
+                            <StackPanel>
+                                <TextBlock Text="Телефон просит пару" FontSize="12.5" FontWeight="SemiBold"
+                                           Foreground="{StaticResource Orange}"/>
+                                <TextBlock x:Name="PairWho" FontSize="12" Margin="0,4,0,0"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <TextBlock x:Name="PairPrint" FontSize="10.5" Foreground="{StaticResource Faint}"
+                                           Margin="0,4,0,0" TextWrapping="Wrap"/>
+                                <Grid Margin="0,9,0,0">
+                                    <Button Style="{StaticResource ChipButton}" HorizontalAlignment="Left" Width="110"
+                                            Height="30" Background="#22FF453A" Foreground="{StaticResource Red}"
+                                            Content="Отклонить" Click="PairNo_Click"/>
+                                    <Button Style="{StaticResource ChipButton}" HorizontalAlignment="Right" Width="110"
+                                            Height="30" Background="#2230D158" Foreground="{StaticResource Green}"
+                                            FontWeight="SemiBold" Content="Разрешить" Click="PairYes_Click"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                        <Border Style="{StaticResource Card}" Padding="12,9">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,6">
+                                    <TextBlock Text="Мост" FontSize="12" Foreground="{StaticResource Dim}"/>
+                                    <TextBlock x:Name="PhoneState" FontSize="12.5" HorizontalAlignment="Right"/>
+                                </Grid>
+                                <Grid Margin="0,0,0,6">
+                                    <TextBlock Text="Телефон" FontSize="12" Foreground="{StaticResource Dim}"/>
+                                    <TextBlock x:Name="PhoneDevice" FontSize="12.5" HorizontalAlignment="Right"
+                                               TextTrimming="CharacterEllipsis" MaxWidth="190"/>
+                                </Grid>
+                                <Grid>
+                                    <TextBlock Text="Заряд" FontSize="12" Foreground="{StaticResource Dim}"/>
+                                    <TextBlock x:Name="PhoneBattery" FontSize="12.5" HorizontalAlignment="Right"/>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </Grid>
 

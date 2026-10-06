@@ -135,6 +135,8 @@ public partial class MainWindow
         NoticesSwitch.Set(Settings.Notices, animate);
         FullscreenSwitch.Set(Settings.HideFullscreen, animate);
         AutostartSwitch.Set(Autostart.Enabled, animate);
+        BridgeSwitch.Set(Settings.Bridge, animate);
+        BridgeKdeSwitch.Set(Settings.BridgeKde, animate);
     }
 
     /// The update screen is a window that dims the whole desktop, so the island itself stands down while the release

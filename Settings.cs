@@ -18,6 +18,9 @@ static class Settings
     static bool _notices = ReadSwitch(nameof(Notices), false);
     static bool _dots = ReadSwitch(nameof(Dots), false);
     static bool _lineBar = ReadSwitch(nameof(LineBar));
+    static bool _bridge = ReadSwitch(nameof(Bridge), false), _bridgeKde = ReadSwitch(nameof(BridgeKde), false);
+    static string _bridgeKey = Read(nameof(BridgeKey), "");
+    static string _bridgePhoneId = Read(nameof(BridgePhoneId), "");
     static int _scale = Math.Clamp(Read(nameof(Scale), DefaultScale), MinScale, MaxScale);
     static int _gap = Math.Clamp(Read(nameof(Gap), DefaultGap), 0, MaxGap);
     static int _accent = Read(nameof(Accent), 0);
@@ -33,6 +36,33 @@ static class Settings
     {
         get => _dots;
         set => Write(nameof(Dots), _dots = value);
+    }
+
+    public static bool Bridge
+    {
+        get => _bridge;
+        set => Write(nameof(Bridge), _bridge = value);
+    }
+
+    /// <summary>Whether the island also answers KDE Connect, the protocol an Android phone already speaks.</summary>
+    public static bool BridgeKde
+    {
+        get => _bridgeKde;
+        set => Write(nameof(BridgeKde), _bridgeKde = value);
+    }
+
+    /// <summary>The sign asked of every phone at the door. The bridge makes one the first time it is started.</summary>
+    public static string BridgeKey
+    {
+        get => _bridgeKey;
+        set => Write(nameof(BridgeKey), _bridgeKey = value, RegistryValueKind.String);
+    }
+
+    /// <summary>The name this island answers to on the network; made once and kept, so phones do not see a new device each run.</summary>
+    public static string BridgePhoneId
+    {
+        get => _bridgePhoneId;
+        set => Write(nameof(BridgePhoneId), _bridgePhoneId = value, RegistryValueKind.String);
     }
 
     public static bool LineBar
